@@ -17,6 +17,8 @@ import java.util.Collections.emptyList
  * for the sake of saving time.
  */
 
+// TODO: Move to a Room or Realm implementation if I have enough time.
+
 class ArticleStoreImpl(val prefs: SharedPreferences) : ArticleStore, KoinComponent {
 
     companion object {

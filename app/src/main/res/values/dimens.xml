@@ -9,6 +9,8 @@
     <dimen name="distance_m">8dp</dimen>
 
     <dimen name="article_listing_item_height">60dp</dimen>
+    <dimen name="article_details_image_height">280dp</dimen>
+
     <dimen name="cardview_elevation">5dp</dimen>
     <dimen name="cardview_corner_radius">5dp</dimen>
 </resources>

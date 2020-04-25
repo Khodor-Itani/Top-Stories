@@ -8,27 +8,29 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kdz.topstories.databinding.StoryListCellBinding
-import com.kdz.topstories.databinding.TopStoriesFragmentBinding
+import com.kdz.topstories.databinding.BookmarksFragmentBinding
+import com.kdz.topstories.databinding.BookmarksListCellBinding
 import com.kdz.topstories.extensions.goToArticleDetails
 import com.kdz.topstories.models.Article
 import com.kdz.topstories.ui.main.diffcallbacks.ArticleDiffCallback
+import kotlinx.coroutines.selects.select
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
+class BookmarksFragment : Fragment(), ArticleSelectionHandler {
 
-    val viewModel: TopStoriesViewModel by viewModel()
-    lateinit var binding: TopStoriesFragmentBinding
+    val viewModel: BookmarksViewModel by viewModel()
+    lateinit var binding: BookmarksFragmentBinding
 
-    lateinit var adapter: StoriesAdapter
+    lateinit var adapter: BookmarksAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = TopStoriesFragmentBinding.inflate(inflater, container, false)
+        binding = BookmarksFragmentBinding.inflate(inflater, container, false)
 
         initAdapter()
         initRecyclerView()
@@ -51,13 +53,13 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
     }
 
     private fun initAdapter() {
-        adapter = StoriesAdapter(viewLifecycleOwner, viewModel, this)
+        adapter = BookmarksAdapter(viewLifecycleOwner, viewModel, this)
     }
 
     private fun initRecyclerView() {
         binding.mainRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            adapter = this@TopStoriesFragment.adapter
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = this@BookmarksFragment.adapter
         }
     }
 
@@ -66,23 +68,23 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
     }
 }
 
-class StoriesViewHolder(val binding: StoryListCellBinding) : RecyclerView.ViewHolder(binding.root)
+class BookmarksViewHolder(val binding: BookmarksListCellBinding) : RecyclerView.ViewHolder(binding.root)
 
-class StoriesAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: TopStoriesViewModel, val selectionHandler: ArticleSelectionHandler) :
-    RecyclerView.Adapter<StoriesViewHolder>() {
+class BookmarksAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: BookmarksViewModel, val selectionHandler: ArticleSelectionHandler) :
+    RecyclerView.Adapter<BookmarksViewHolder>() {
 
     var items = listOf<Article>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoriesViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarksViewHolder {
         val binding =
-            StoryListCellBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            BookmarksListCellBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return StoriesViewHolder(binding)
+        return BookmarksViewHolder(binding)
     }
 
     override fun getItemCount() = items.size
 
-    override fun onBindViewHolder(holder: StoriesViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BookmarksViewHolder, position: Int) {
         val article = items[position]
 
         holder.binding.article = article
@@ -90,4 +92,5 @@ class StoriesAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: TopS
         holder.binding.selectionHandler = selectionHandler
         holder.binding.lifecycleOwner = viewLifecycleOwner
     }
+
 }

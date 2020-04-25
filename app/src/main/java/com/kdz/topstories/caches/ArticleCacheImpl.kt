@@ -3,6 +3,7 @@ package com.kdz.topstories.caches
 import com.kdz.topstories.models.Article
 import com.kdz.topstories.models.Section
 import io.reactivex.Observable
+import io.reactivex.subjects.ReplaySubject
 
 class ArticleCacheImpl : ArticleCache {
 

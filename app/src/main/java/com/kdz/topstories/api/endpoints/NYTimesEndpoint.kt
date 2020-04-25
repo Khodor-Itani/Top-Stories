@@ -17,7 +17,7 @@ interface NYTimesEndpoint {
     }
 
     /**
-     * Retrieves Top Stories by category. We will only be using the "World" section for this example.
+     * Retrieves Top Stories by category. We will only be using the "Home" section for this example.
      */
     @GET("$baseUrl{section}.json?api-key=${API.APIKey}")
     fun getTopStories(@Path("section") section: String): Observable<GetArticlesResponse>

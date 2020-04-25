@@ -5,14 +5,13 @@
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="article"
             type="com.kdz.topstories.models.Article" />
 
         <variable
             name="viewModel"
-            type="com.kdz.topstories.ui.main.TopStoriesViewModel" />
+            type="com.kdz.topstories.ui.main.BookmarksViewModel" />
 
         <variable
             name="selectionHandler"
@@ -29,7 +28,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/distance_m"
             android:padding="@dimen/distance_m">
 
@@ -37,47 +36,37 @@
                 android:id="@+id/imageView"
                 android:layout_width="@dimen/article_listing_item_height"
                 android:layout_height="@dimen/article_listing_item_height"
-                bind:imageUrl="@{article.getThumbnail()}"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:imageUrl="@{article.getThumbnail()}" />
 
             <TextView
                 android:id="@+id/titleTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/distance_m"
+                android:layout_marginTop="@dimen/distance_m"
+                android:text="@{article.title}"
+                android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:text="@{article.title}"
-                app:layout_constraintEnd_toStartOf="@id/bookmarkImageView"
-                app:layout_constraintStart_toEndOf="@id/imageView"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageView" />
 
             <TextView
-                bind:date="@{article.publishedDate}"
                 android:id="@+id/dateTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/distance_m"
                 android:layout_marginTop="@dimen/distance_m"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@id/bookmarkImageView"
-                app:layout_constraintStart_toEndOf="@id/imageView"
-                app:layout_constraintTop_toBottomOf="@id/titleTextView"/>
-
-            <ImageView
-                android:tint="@{article.bookmarked ? @color/bookmarked_article_tint : @android:color/black}"
-                android:id="@+id/bookmarkImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:onClick="@{(v) -> viewModel.bookmarkArticle(article)}"
-                android:src="@drawable/ic_bookmark_border_black_24dp"
+                android:textAlignment="center"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/titleTextView" />
+                app:layout_constraintTop_toBottomOf="@id/titleTextView"
+                bind:date="@{article.publishedDate}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

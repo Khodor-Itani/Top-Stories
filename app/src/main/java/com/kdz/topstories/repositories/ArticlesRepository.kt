@@ -8,5 +8,5 @@ import io.reactivex.Single
 interface ArticlesRepository {
     fun getTopStories(section: Section): Observable<List<Article>>
     fun getBookmarkedArticles(): Observable<List<Article>>
-    fun pollTopStories()
+    fun pollTopStories(section: Section): Single<List<Article>>
 }
