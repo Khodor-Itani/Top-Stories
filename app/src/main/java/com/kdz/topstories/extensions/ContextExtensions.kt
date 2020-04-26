@@ -3,8 +3,13 @@ package com.kdz.topstories.extensions
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.kdz.topstories.models.Article
-import com.kdz.topstories.ui.main.ArticleDetailsActivity
+import com.kdz.topstories.models.ArticleEntity
+import com.kdz.topstories.ui.activities.articledetails.ArticleDetailsActivity
+
+/**
+ * Helper methods for navigation. Ideally, we'd use Navigation components with single Activity
+ * architecture instead.
+ */
 
 fun Context.goToBrowser(url: String){
     val i = Intent(Intent.ACTION_VIEW)
@@ -14,7 +19,7 @@ fun Context.goToBrowser(url: String){
 
 const val ARTICLE_PARAM = "ARTICLE_PARAM"
 
-fun Context.goToArticleDetails(article: Article) {
+fun Context.goToArticleDetails(article: ArticleEntity) {
     val intent = Intent(this, ArticleDetailsActivity::class.java)
     intent.putExtra(ARTICLE_PARAM, article)
     startActivity(intent)

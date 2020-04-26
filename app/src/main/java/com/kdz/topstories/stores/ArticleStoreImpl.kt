@@ -1,99 +1,117 @@
 package com.kdz.topstories.stores
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.kdz.topstories.models.Article
+import com.kdz.topstories.caches.ArticleCache
+import com.kdz.topstories.databases.ArticleDatabase
+import com.kdz.topstories.extensions.listOrEmpty
+import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.models.Section
-import io.reactivex.Observable
+import io.reactivex.Completable
+import io.reactivex.Maybe
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import java.util.Collections.emptyList
 
-/**
- * A store built on top of SharedPreferences.
- * It would me more optimal to use a db such as Room or Realm, but I'm using SharedPreferences
- * for the sake of saving time.
- */
+class ArticleStoreImpl : ArticleStore, KoinComponent {
 
-// TODO: Move to a Room or Realm implementation if I have enough time.
+    val articleDatabase: ArticleDatabase by inject()
+    val articleCache: ArticleCache by inject()
 
-class ArticleStoreImpl(val prefs: SharedPreferences) : ArticleStore, KoinComponent {
-
-    companion object {
-        val BOOKMARKED_ARTICLES_KEY = "BOOKMARKED_ARTICLES"
+    init {
+        observeAllArticles()
+        observeBookmarkedArticles()
     }
 
-    val gson: Gson by inject()
+    /**
+     * Retrieve a Maybe that signals whether the database contains a populated list of articles for
+     * the given Section.
+     */
+    override fun getArticles(section: Section): Maybe<List<ArticleEntity>?> {
+        return articleDatabase.articleDao()
+            .getArticles(section)
+            .listOrEmpty()
+            .subscribeOn(Schedulers.io())
+    }
 
-    override fun getArticles(section: Section): Observable<List<Article>> {
-        return Observable.create { emitter ->
-            val articles = getArticlesInner(section)
+    /**
+     * Persist Article list to storage
+     */
+    override fun setArticles(articles: List<ArticleEntity>) {
+        Single.create<Void> {
+            articleDatabase.articleDao().upsert(articles)
+        }.subscribeOn(Schedulers.io())
+            .subscribe()
+    }
 
-            if (!articles.isNullOrEmpty()) {
-                emitter.onNext(articles)
+    /**
+     * Returns a Maybe that emits a list of bookmarked Articles, or finishes if the list is null or empty.
+     */
+    override fun getBookmarkedArticles(): Maybe<List<ArticleEntity>?> {
+        return articleDatabase.articleDao()
+            .getBookmarked()
+            .listOrEmpty()
+            .subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * Persist an article to storage.
+     */
+    override fun addArticle(article: ArticleEntity) {
+        Maybe.create<Boolean> {
+            articleDatabase.articleDao().update(article)
+            it.onSuccess(true)
+        }
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    /**
+     * Replace non-bookmarked articles with new articles.
+     */
+    override fun refreshArticleSection(articles: List<ArticleEntity>, section: Section) {
+        deleteAllArticlesKeepBookmarked(section)
+            .andThen {
+                setArticles(articles)
+            }
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    /**
+     * Deletes all articles, retaining bookmarked articles.
+     */
+    private fun deleteAllArticlesKeepBookmarked(section: Section): Completable {
+        return Completable.fromAction {
+            articleDatabase.articleDao().deletePreservingBookmarked(section)
+        }
+            .subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * Observes the database for changes to the list of all articles. Updates are
+     * then pushed into the article cache. Subscribers are created relative to the Articles' sections.
+     */
+    private fun observeAllArticles() {
+        Section.values().forEach { section ->
+
+            articleDatabase.articleDao().observeArticles(section).subscribe { articles ->
+                articles?.let {
+                    articleCache.setArticles(articles, section)
+                }
             }
 
-            emitter.onComplete()
         }
     }
 
     /**
-     * Persist Article list to SharedPreferences
+     * Observes the database for changes to the list of bookmarked articles. Updates are
+     * then pushed into the article cache.
      */
-    override fun setArticles(articles: List<Article>, section: Section) {
-        val json = gson.toJson(articles)
-
-        prefs.edit {
-            putString(section.value, json)
-        }
-    }
-
-    override fun getBookmarkedArticles(): Observable<List<Article>> {
-        return Observable.create { emitter ->
-            val bookmarkedArticles = getBookmarkedArticlesInner()
-
-            if(!bookmarkedArticles.isNullOrEmpty()) {
-                emitter.onNext(bookmarkedArticles)
+    private fun observeBookmarkedArticles() {
+        articleDatabase.articleDao().observeBookmarked().subscribe { articles ->
+            articles?.let {
+                articleCache.setBookmarkedArticles(it)
             }
-
-            emitter.onComplete()
-        }
-    }
-
-    /**
-     * Persist Article list to SharedPreferences
-     */
-    override fun setBookmarkedArticles(articles: List<Article>) {
-        val json = gson.toJson(articles)
-
-        prefs.edit {
-            putString(BOOKMARKED_ARTICLES_KEY, json)
-        }
-    }
-
-    /**
-     * Get a list of articles for a section from SharedPreferences.
-     * Returns an empty list if no articles exist.
-     */
-    private fun getArticlesInner(section: Section): List<Article> {
-        val typeToken = object : TypeToken<List<Article>>() {}.type
-
-        prefs.getString(section.value, null).let {
-            return gson.fromJson(it, typeToken) as List<Article>? ?: emptyList()
-        }
-    }
-
-    /**
-     * Get a list of isBookmarked from SharedPreferences.
-     * Returns an empty list if no articles exist.
-     */
-    private fun getBookmarkedArticlesInner(): List<Article> {
-        val typeToken = object : TypeToken<List<Article>>() {}.type
-
-        prefs.getString(BOOKMARKED_ARTICLES_KEY, null).let {
-            return gson.fromJson(it, typeToken) as List<Article>? ?: emptyList()
         }
     }
 }

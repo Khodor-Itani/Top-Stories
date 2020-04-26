@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
@@ -69,6 +69,12 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
+    /**
+     * Room
+     */
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
 
     /**
      * Dependency Injection

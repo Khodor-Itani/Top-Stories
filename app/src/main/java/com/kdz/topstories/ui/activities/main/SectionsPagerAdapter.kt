@@ -1,10 +1,12 @@
-package com.kdz.topstories.ui.main
+package com.kdz.topstories.ui.activities.main
 
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.kdz.topstories.R
+import com.kdz.topstories.ui.fragments.bookmarks.BookmarksFragment
+import com.kdz.topstories.ui.fragments.topstories.TopStoriesFragment
 
 private val TAB_TITLES = arrayOf(
     R.string.top_stories_tab_title,

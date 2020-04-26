@@ -1,113 +1,86 @@
 package com.kdz.topstories.repositories
 
-import com.kdz.topstories.api.endpoints.NYTimesEndpoint
-import com.kdz.topstories.api.responses.GetArticlesResponse
 import com.kdz.topstories.caches.ArticleCache
+import com.kdz.topstories.datasources.ArticleDataSource
 import com.kdz.topstories.models.Article
+import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.models.Section
 import com.kdz.topstories.stores.ArticleStore
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
 
 /*
- *  Implements CRUD operations and business logic for bookmarked and non-bookmarked articles.
+ * Implements CRUD operations and business logic for bookmarked and non-bookmarked articles.
  */
 
 // TODO: Move to a Coroutines implementation if I have enough time
 
 class ArticlesRepositoryImpl(
-    val endpoint: NYTimesEndpoint,
+    val articleDataSource: ArticleDataSource,
     val articleStore: ArticleStore,
     val articleCache: ArticleCache
 ) : ArticlesRepository {
+
+    var networkDisposable: Disposable? = null
 
     /**
      * Returns the requested Top stories for the section.
      * Prioritizes fetching from Caches and Stores before calling the API.
      */
-    override fun getTopStories(section: Section): Observable<List<Article>> {
-        val fromCache = articleCache.getArticles(section)
-        val fromStore = articleStore.getArticles(section)
-            .doOnNext {
-                articleCache.setArticles(it, section)
-            }
-        val fromNetwork = endpoint.getTopStories(section.value)
-            .map(::mapGetArticlesResponse).doOnNext {
-                articleCache.setArticles(it, section)
-                articleStore.setArticles(it, section)
-            }
+    override fun getTopStories(section: Section): Observable<List<ArticleEntity>?> {
+        val cache = articleCache.getArticles(section).toObservable()
+        val store = articleStore.getArticles(section).toObservable()
+        val network = articleDataSource.getArticles(section).toObservable()
+        if (!isCallingNetwork()) {
+            networkDisposable =
+                Observable.concat(cache, store, network)
+                    .firstElement()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+        }
 
-
-
-        // TODO: Handle edge case of all three requests failing.
-
-        return Observable.concat(fromCache, fromStore, fromNetwork)
-            .firstElement()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .toObservable()
+        return  articleCache.getObservableArticles(section)
     }
 
     /**
      * Retrieves isBookmarked articles, prioritizing reading from Cache over Storage.
      */
-    override fun getBookmarkedArticles(): Observable<List<Article>> {
-        val fromCache = articleCache.getBookmarkedArticles()
-        val fromStore = articleStore.getBookmarkedArticles()
-            .doOnNext {
-                articleCache.setBookmarkedArticles(it)
-            }
+    override fun getBookmarkedArticles(): Observable<List<ArticleEntity>?> {
+        val cache = articleCache.getBookmarkedArticles().toObservable()
+        val store = articleStore.getBookmarkedArticles().toObservable()
 
-        return Observable.concat(fromCache, fromStore)
-            .firstElement()
-            .map(::mapBookmarkedArticles)
+        Observable.concat(cache, store)
+            .first(emptyList())
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .toObservable()
+            .subscribe()
+
+        return articleCache.getObservableBookmarkedArticles()
     }
 
     /**
      * Called periodically in order to poll the API for Article updates.
      */
-    override fun pollTopStories(section: Section): Single<List<Article>> {
-        return endpoint.getTopStories(section.value)
-            .map(::mapGetArticlesResponse).doOnNext {
-                articleStore.setArticles(it, section)
-            }
-            .singleOrError()
+    override fun pollTopStories(section: Section): Single<List<ArticleEntity>?> {
+        return articleDataSource.getArticles(section)
     }
 
     /**
-     *  Map the articles response into a list of articles.
+     * Changes bookmarked flag and updates the store.
      */
-    private fun mapGetArticlesResponse(response: GetArticlesResponse): List<Article> {
-
-        if (response.isSuccess()) {
-            response.results?.let {
-                return it
-            }
+    override fun bookmarkArticle(article: ArticleEntity, bookmarked: Boolean) {
+        article.copy().also {
+            it.isBookmarked = bookmarked
+            articleStore.addArticle(it)
         }
-
-        response.status?.let {
-            throw Exception(it)
-        }
-
-        throw Exception("GetArticles failed with no status")
     }
 
     /**
-     * Set "bookmarked" to true for all articles received from the Bookmarked Articles stores.
+     * Checks if network requests are being made, since we might have multiple sources
+     * requesting articles.
      */
-
-    private fun mapBookmarkedArticles(articles: List<Article>): List<Article> {
-        articles.map {
-            it.isBookmarked = true
-        }
-
-        return articles
+    private fun isCallingNetwork(): Boolean {
+        return networkDisposable?.isDisposed?.not() ?: false
     }
 }

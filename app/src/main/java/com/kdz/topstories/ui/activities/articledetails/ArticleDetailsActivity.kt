@@ -1,4 +1,4 @@
-package com.kdz.topstories.ui.main
+package com.kdz.topstories.ui.activities.articledetails
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

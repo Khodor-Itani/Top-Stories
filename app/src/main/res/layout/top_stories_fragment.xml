@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.kdz.topstories.ui.main.TopStoriesViewModel" />
+            type="com.kdz.topstories.ui.fragments.topstories.TopStoriesViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

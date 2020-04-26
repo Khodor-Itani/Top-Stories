@@ -23,6 +23,7 @@ data class Article(
     val multiMedia: List<MultiMedia>,
 
     var isBookmarked: Boolean = false
+
 ) : Parcelable {
     fun getThumbnail(): String? {
         return multiMedia.find {

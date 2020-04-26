@@ -2,4 +2,7 @@
     <string name="app_name">Top Stories</string>
     <string name="top_stories_tab_title">Top Stories</string>
     <string name="bookmarks_tab_title">Bookmarks</string>
+    <string name="added_bookmark">Added to bookmarks!</string>
+    <string name="removed_bookmark">Removed from bookmarks!</string>
+    <string name="no_bookmarks_found">No bookmarks found</string>
 </resources>

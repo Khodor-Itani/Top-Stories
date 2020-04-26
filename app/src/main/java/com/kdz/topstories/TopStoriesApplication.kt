@@ -38,10 +38,12 @@ class TopStoriesApplication : Application() {
                 listOf(
                     networkingModule,
                     repositoriesModule,
-                    storesModule,
                     cacheModule,
                     viewModelsModule,
-                    workerModule
+                    workerModule,
+                    databaseModule,
+                    dataSourceModule,
+                    storesModule
                 )
             )
         }

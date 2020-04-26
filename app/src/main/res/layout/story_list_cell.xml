@@ -8,15 +8,15 @@
 
         <variable
             name="article"
-            type="com.kdz.topstories.models.Article" />
+            type="com.kdz.topstories.models.ArticleEntity" />
 
         <variable
             name="viewModel"
-            type="com.kdz.topstories.ui.main.TopStoriesViewModel" />
+            type="com.kdz.topstories.ui.fragments.topstories.TopStoriesViewModel" />
 
         <variable
             name="selectionHandler"
-            type="com.kdz.topstories.ui.main.ArticleSelectionHandler" />
+            type="com.kdz.topstories.ui.ArticleSelectionHandler" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -37,7 +37,7 @@
                 android:id="@+id/imageView"
                 android:layout_width="@dimen/article_listing_item_height"
                 android:layout_height="@dimen/article_listing_item_height"
-                bind:imageUrl="@{article.getThumbnail()}"
+                bind:imageUrl="@{article.thumbNailUrl}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -69,18 +69,17 @@
                 app:layout_constraintTop_toBottomOf="@id/titleTextView"/>
 
             <ImageView
-                android:tint="@{article.bookmarked ? @color/bookmarked_article_tint : @android:color/black}"
+                android:tint="@{article.bookmarked ? @android:color/holo_blue_bright : @android:color/black}"
                 android:id="@+id/bookmarkImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
-                android:onClick="@{(v) -> viewModel.bookmarkArticle(article)}"
+                android:onClick="@{(v) -> viewModel.toggleArticleBookmark(article)}"
                 android:src="@drawable/ic_bookmark_border_black_24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/titleTextView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     </androidx.cardview.widget.CardView>
 

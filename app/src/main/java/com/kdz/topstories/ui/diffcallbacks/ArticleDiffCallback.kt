@@ -1,9 +1,9 @@
-package com.kdz.topstories.ui.main.diffcallbacks
+package com.kdz.topstories.ui.diffcallbacks
 
 import androidx.recyclerview.widget.DiffUtil
-import com.kdz.topstories.models.Article
+import com.kdz.topstories.models.ArticleEntity
 
-class ArticleDiffCallback(val oldList: List<Article>, val newList: List<Article>) :
+class ArticleDiffCallback(val oldList: List<ArticleEntity>, val newList: List<ArticleEntity>) :
     DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition].title.trim().equals(newList[newItemPosition].title.trim())
@@ -18,6 +18,6 @@ class ArticleDiffCallback(val oldList: List<Article>, val newList: List<Article>
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].isBookmarked.equals(newList[newItemPosition].isBookmarked)
+        return oldList[oldItemPosition].isBookmarked == newList[newItemPosition].isBookmarked
     }
 }

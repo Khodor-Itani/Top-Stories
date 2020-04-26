@@ -7,15 +7,15 @@
     <data>
         <variable
             name="article"
-            type="com.kdz.topstories.models.Article" />
+            type="com.kdz.topstories.models.ArticleEntity" />
 
         <variable
             name="viewModel"
-            type="com.kdz.topstories.ui.main.BookmarksViewModel" />
+            type="com.kdz.topstories.ui.fragments.bookmarks.BookmarksViewModel" />
 
         <variable
             name="selectionHandler"
-            type="com.kdz.topstories.ui.main.ArticleSelectionHandler" />
+            type="com.kdz.topstories.ui.ArticleSelectionHandler" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -39,7 +39,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                bind:imageUrl="@{article.getThumbnail()}" />
+                bind:imageUrl="@{article.thumbNailUrl}" />
 
             <TextView
                 android:id="@+id/titleTextView"

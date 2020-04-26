@@ -1,13 +1,19 @@
 package com.kdz.topstories.models
 
-/*
- * Represents a NYT News section
- */
-
 enum class Section(val value: String) {
     ARTS("arts"),
     HOME("home"),
     SCIENCE("science"),
     US("us"),
-    WORLD("world")
+    WORLD("world");
+
+    companion object {
+        fun create(string: String): Section {
+            values().forEach {
+                if(string.equals(it.value)) return it
+            }
+
+            return WORLD
+        }
+    }
 }

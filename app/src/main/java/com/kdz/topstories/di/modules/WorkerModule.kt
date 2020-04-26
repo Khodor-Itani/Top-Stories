@@ -12,7 +12,8 @@ const val CONNECTIVITY_AWARE_WORKER_CONSTRAINT = "CONNECTIVITY_AWARE_WORKER_CONS
 const val POLL_WORK_REQUEST = "POLL_WORK_REQUEST"
 
 val workerModule = module {
-    // Work Request constraints requiring network connectivity
+
+    // Provide Work Request constraints that require network activity
 
     factory(named(CONNECTIVITY_AWARE_WORKER_CONSTRAINT)) {
         Constraints.Builder()
@@ -20,9 +21,11 @@ val workerModule = module {
             .build()
     }
 
-    // Default Article-polling Work Request
+    // Default Article-polling Work Request.
+    // Setting poll time to 15 minutes for debug purposes.
+
     factory(named(POLL_WORK_REQUEST)) {
-        PeriodicWorkRequestBuilder<ArticlePollWorker>(12, TimeUnit.HOURS)
+        PeriodicWorkRequestBuilder<ArticlePollWorker>(15, TimeUnit.MINUTES)
             .setConstraints(get(named(CONNECTIVITY_AWARE_WORKER_CONSTRAINT)))
             .build()
     }

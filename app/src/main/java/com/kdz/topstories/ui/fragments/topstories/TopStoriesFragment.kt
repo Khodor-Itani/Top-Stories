@@ -1,4 +1,4 @@
-package com.kdz.topstories.ui.main
+package com.kdz.topstories.ui.fragments.topstories
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,18 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.kdz.topstories.databinding.StoryListCellBinding
 import com.kdz.topstories.databinding.TopStoriesFragmentBinding
 import com.kdz.topstories.extensions.goToArticleDetails
-import com.kdz.topstories.models.Article
-import com.kdz.topstories.ui.main.diffcallbacks.ArticleDiffCallback
+import com.kdz.topstories.models.ArticleEntity
+import com.kdz.topstories.ui.ArticleSelectionHandler
+import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
 
     val viewModel: TopStoriesViewModel by viewModel()
-    lateinit var binding: TopStoriesFragmentBinding
 
+    lateinit var binding: TopStoriesFragmentBinding
     lateinit var adapter: StoriesAdapter
 
     override fun onCreateView(
@@ -33,6 +35,8 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
         initAdapter()
         initRecyclerView()
         observeArticles()
+        observeSnackbarMessages()
+
         return binding.root
     }
 
@@ -42,7 +46,7 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
         })
     }
 
-    private fun onArticlesReceived(newList: List<Article>) {
+    private fun onArticlesReceived(newList: List<ArticleEntity>) {
         val oldList = adapter.items
         val diffCallback = ArticleDiffCallback(oldList, newList)
         val result = DiffUtil.calculateDiff(diffCallback)
@@ -50,8 +54,25 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
         result.dispatchUpdatesTo(adapter)
     }
 
+    private fun observeSnackbarMessages() {
+        viewModel.snackbar.observe(viewLifecycleOwner, Observer {
+            val snackbar = Snackbar.make(activity?.findViewById(android.R.id.content)!!, context?.getString(it)!!, Snackbar.LENGTH_LONG)
+
+            snackbar.setAction(android.R.string.ok) {
+                snackbar.dismiss()
+            }
+
+            snackbar.show()
+        })
+    }
+
     private fun initAdapter() {
-        adapter = StoriesAdapter(viewLifecycleOwner, viewModel, this)
+        adapter =
+            StoriesAdapter(
+                viewLifecycleOwner,
+                viewModel,
+                this
+            )
     }
 
     private fun initRecyclerView() {
@@ -61,7 +82,7 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
         }
     }
 
-    override fun onArticleSelected(article: Article) {
+    override fun onArticleSelected(article: ArticleEntity) {
         activity?.goToArticleDetails(article)
     }
 }
@@ -71,7 +92,7 @@ class StoriesViewHolder(val binding: StoryListCellBinding) : RecyclerView.ViewHo
 class StoriesAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: TopStoriesViewModel, val selectionHandler: ArticleSelectionHandler) :
     RecyclerView.Adapter<StoriesViewHolder>() {
 
-    var items = listOf<Article>()
+    var items = listOf<ArticleEntity>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoriesViewHolder {
         val binding =

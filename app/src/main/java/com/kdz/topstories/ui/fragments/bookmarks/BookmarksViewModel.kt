@@ -1,9 +1,10 @@
-package com.kdz.topstories.ui.main
+package com.kdz.topstories.ui.fragments.bookmarks
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdz.topstories.models.Article
+import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.models.Section
 import com.kdz.topstories.repositories.ArticlesRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -13,11 +14,11 @@ import org.koin.core.inject
 
 class BookmarksViewModel : ViewModel(), KoinComponent {
 
-    val articlesRepository: ArticlesRepository by inject()
-    val compositeDisposable = CompositeDisposable()
+    private val articlesRepository: ArticlesRepository by inject()
+    private val compositeDisposable = CompositeDisposable()
 
-    private val _articles = MutableLiveData<List<Article>>()
-    val articles: LiveData<List<Article>>
+    private val _articles = MutableLiveData<List<ArticleEntity>>()
+    val articles: LiveData<List<ArticleEntity>>
         get() = _articles
 
     init {
@@ -25,15 +26,11 @@ class BookmarksViewModel : ViewModel(), KoinComponent {
     }
 
     private fun getArticles() {
-        articlesRepository.getTopStories(Section.HOME).subscribe({
+        articlesRepository.getBookmarkedArticles().subscribe({
             _articles.postValue(it)
         }, {
             //TODO: Handle failure
         }).addTo(compositeDisposable)
-    }
-
-    fun removeBookmark(article: Article) {
-
     }
 
     override fun onCleared() {

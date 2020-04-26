@@ -1,52 +1,62 @@
 package com.kdz.topstories.caches
 
-import com.kdz.topstories.models.Article
+import com.kdz.topstories.extensions.toMaybe
+import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.models.Section
+import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.subjects.ReplaySubject
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.Subject
 
 class ArticleCacheImpl : ArticleCache {
 
-    private val _allArticles: MutableMap<Section, List<Article>> by lazy(::initAllArticles)
-    private var _bookmarkedArticles: List<Article> = emptyList()
+    private val allArticles: MutableMap<Section, List<ArticleEntity>?> by lazy(::initAllArticles)
+    private var bookmarkedArticles: List<ArticleEntity>? = null
 
-    override fun getArticles(section: Section): Observable<List<Article>> {
-        return Observable.create { emitter ->
-            val articlesInSection = _allArticles[section]
+    private val allObservableArticles: MutableMap<Section, Subject<List<ArticleEntity>?>> by lazy(::initAllObservableArticles)
+    private val observableBookmarkedArticles: Subject<List<ArticleEntity>?> by lazy(::initObservableBookmarkedArticles)
 
-            if (!articlesInSection.isNullOrEmpty()) {
-                emitter.onNext(articlesInSection)
-            }
-
-            emitter.onComplete()
-        }
+    override fun getObservableArticles(section: Section): Observable<List<ArticleEntity>?> {
+        return allObservableArticles[section]!!
     }
 
-    override fun setArticles(articles: List<Article>, section: Section) {
-        _allArticles[section] = articles
+    override fun setArticles(articles: List<ArticleEntity>, section: Section) {
+        allArticles[section] = articles
+        allObservableArticles[section]?.onNext(articles)
     }
 
-    override fun getBookmarkedArticles(): Observable<List<Article>> {
-        return Observable.create { emitter ->
-            if (!_bookmarkedArticles.isNullOrEmpty()) {
-                emitter.onNext(_bookmarkedArticles)
-            }
-
-            emitter.onComplete()
-        }
+    override fun getObservableBookmarkedArticles(): Observable<List<ArticleEntity>?> {
+        return observableBookmarkedArticles
     }
 
-    override fun setBookmarkedArticles(articles: List<Article>) {
-        _bookmarkedArticles = articles
+    override fun getBookmarkedArticles(): Maybe<List<ArticleEntity>?> {
+        return bookmarkedArticles.toMaybe()
     }
 
-    private fun initAllArticles(): MutableMap<Section, List<Article>> {
-        val map = mutableMapOf<Section, List<Article>>()
+    override fun setBookmarkedArticles(articles: List<ArticleEntity>) {
+        bookmarkedArticles = articles
+        observableBookmarkedArticles.onNext(articles)
+    }
+
+    override fun getArticles(section: Section): Maybe<List<ArticleEntity>?> {
+        return allArticles[section].toMaybe()
+    }
+
+    private fun initAllObservableArticles(): MutableMap<Section, Subject<List<ArticleEntity>?>> {
+        val map = mutableMapOf<Section, Subject<List<ArticleEntity>?>>()
 
         Section.values().forEach {
-            map[it] = emptyList()
+            map[it] = BehaviorSubject.create()
         }
 
         return map
+    }
+
+    private fun initObservableBookmarkedArticles(): Subject<List<ArticleEntity>?> {
+        return BehaviorSubject.create()
+    }
+
+    private fun initAllArticles(): MutableMap<Section, List<ArticleEntity>?> {
+        return mutableMapOf()
     }
 }

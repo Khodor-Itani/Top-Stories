@@ -4,6 +4,7 @@
     package="com.kdz.topstories">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name="com.kdz.topstories.TopStoriesApplication"
@@ -16,7 +17,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.kdz.topstories.MainActivity"
+            android:name="com.kdz.topstories.ui.activities.main.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -32,7 +33,7 @@
         </activity>
 
         <activity
-            android:name=".ui.main.ArticleDetailsActivity"
+            android:name="com.kdz.topstories.ui.activities.articledetails.ArticleDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
@@ -40,6 +41,15 @@
             </intent-filter>
 
         </activity>
+
+        <receiver
+            android:name=".broadcastreceivers.BootBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 

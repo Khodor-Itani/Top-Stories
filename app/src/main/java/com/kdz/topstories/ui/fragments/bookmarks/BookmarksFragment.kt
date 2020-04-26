@@ -1,4 +1,4 @@
-package com.kdz.topstories.ui.main
+package com.kdz.topstories.ui.fragments.bookmarks
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +9,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdz.topstories.databinding.BookmarksFragmentBinding
 import com.kdz.topstories.databinding.BookmarksListCellBinding
 import com.kdz.topstories.extensions.goToArticleDetails
-import com.kdz.topstories.models.Article
-import com.kdz.topstories.ui.main.diffcallbacks.ArticleDiffCallback
-import kotlinx.coroutines.selects.select
+import com.kdz.topstories.models.ArticleEntity
+import com.kdz.topstories.ui.ArticleSelectionHandler
+import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class BookmarksFragment : Fragment(), ArticleSelectionHandler {
@@ -35,6 +34,7 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
         initAdapter()
         initRecyclerView()
         observeArticles()
+
         return binding.root
     }
 
@@ -44,7 +44,16 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
         })
     }
 
-    private fun onArticlesReceived(newList: List<Article>) {
+    private fun onArticlesReceived(newList: List<ArticleEntity>) {
+
+        if(newList.isNullOrEmpty()) {
+            binding.mainRecyclerView.visibility = View.GONE
+            binding.noDataTextView.visibility = View.VISIBLE
+        } else {
+            binding.mainRecyclerView.visibility = View.VISIBLE
+            binding.noDataTextView.visibility = View.GONE
+        }
+
         val oldList = adapter.items
         val diffCallback = ArticleDiffCallback(oldList, newList)
         val result = DiffUtil.calculateDiff(diffCallback)
@@ -53,7 +62,11 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
     }
 
     private fun initAdapter() {
-        adapter = BookmarksAdapter(viewLifecycleOwner, viewModel, this)
+        adapter = BookmarksAdapter(
+            viewLifecycleOwner,
+            viewModel,
+            this
+        )
     }
 
     private fun initRecyclerView() {
@@ -63,7 +76,7 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
         }
     }
 
-    override fun onArticleSelected(article: Article) {
+    override fun onArticleSelected(article: ArticleEntity) {
         activity?.goToArticleDetails(article)
     }
 }
@@ -73,7 +86,7 @@ class BookmarksViewHolder(val binding: BookmarksListCellBinding) : RecyclerView.
 class BookmarksAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: BookmarksViewModel, val selectionHandler: ArticleSelectionHandler) :
     RecyclerView.Adapter<BookmarksViewHolder>() {
 
-    var items = listOf<Article>()
+    var items = listOf<ArticleEntity>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarksViewHolder {
         val binding =
@@ -92,5 +105,6 @@ class BookmarksAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: Bo
         holder.binding.selectionHandler = selectionHandler
         holder.binding.lifecycleOwner = viewLifecycleOwner
     }
+
 
 }
