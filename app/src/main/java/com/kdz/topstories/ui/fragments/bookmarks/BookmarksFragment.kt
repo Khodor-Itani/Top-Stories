@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import com.kdz.topstories.extensions.goToArticleDetails
 import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.ui.ArticleSelectionHandler
 import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class BookmarksFragment : Fragment(), ArticleSelectionHandler {
@@ -46,7 +48,7 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
 
     private fun onArticlesReceived(newList: List<ArticleEntity>) {
 
-        if(newList.isNullOrEmpty()) {
+        if (newList.isNullOrEmpty()) {
             binding.mainRecyclerView.visibility = View.GONE
             binding.noDataTextView.visibility = View.VISIBLE
         } else {
@@ -54,11 +56,13 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
             binding.noDataTextView.visibility = View.GONE
         }
 
-        val oldList = adapter.items
-        val diffCallback = ArticleDiffCallback(oldList, newList)
-        val result = DiffUtil.calculateDiff(diffCallback)
-        adapter.items = newList
-        result.dispatchUpdatesTo(adapter)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val oldList = adapter.items
+            val diffCallback = ArticleDiffCallback(oldList, newList)
+            val result = DiffUtil.calculateDiff(diffCallback)
+            adapter.items = newList
+            result.dispatchUpdatesTo(adapter)
+        }
     }
 
     private fun initAdapter() {
@@ -81,9 +85,14 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
     }
 }
 
-class BookmarksViewHolder(val binding: BookmarksListCellBinding) : RecyclerView.ViewHolder(binding.root)
+class BookmarksViewHolder(val binding: BookmarksListCellBinding) :
+    RecyclerView.ViewHolder(binding.root)
 
-class BookmarksAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: BookmarksViewModel, val selectionHandler: ArticleSelectionHandler) :
+class BookmarksAdapter(
+    val viewLifecycleOwner: LifecycleOwner,
+    val viewModel: BookmarksViewModel,
+    val selectionHandler: ArticleSelectionHandler
+) :
     RecyclerView.Adapter<BookmarksViewHolder>() {
 
     var items = listOf<ArticleEntity>()

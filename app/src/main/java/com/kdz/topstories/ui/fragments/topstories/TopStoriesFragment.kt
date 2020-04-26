@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import com.kdz.topstories.extensions.goToArticleDetails
 import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.ui.ArticleSelectionHandler
 import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
@@ -47,11 +49,13 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
     }
 
     private fun onArticlesReceived(newList: List<ArticleEntity>) {
-        val oldList = adapter.items
-        val diffCallback = ArticleDiffCallback(oldList, newList)
-        val result = DiffUtil.calculateDiff(diffCallback)
-        adapter.items = newList
-        result.dispatchUpdatesTo(adapter)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val oldList = adapter.items
+            val diffCallback = ArticleDiffCallback(oldList, newList)
+            val result = DiffUtil.calculateDiff(diffCallback)
+            adapter.items = newList
+            result.dispatchUpdatesTo(adapter)
+        }
     }
 
     private fun observeSnackbarMessages() {
