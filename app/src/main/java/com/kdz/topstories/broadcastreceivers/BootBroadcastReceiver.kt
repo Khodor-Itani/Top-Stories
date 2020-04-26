@@ -12,6 +12,10 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import org.koin.core.qualifier.named
 
+/**
+ * Resumes article polling after the device has been rebooted.
+ */
+
 class BootBroadcastReceiver : BroadcastReceiver(), KoinComponent {
 
     override fun onReceive(context: Context?, intent: Intent?) {

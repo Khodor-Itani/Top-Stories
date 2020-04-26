@@ -2,9 +2,6 @@ package com.kdz.topstories.api.endpoints
 
 import com.kdz.topstories.api.API
 import com.kdz.topstories.api.responses.GetArticlesResponse
-import com.kdz.topstories.models.Article
-import com.kdz.topstories.models.Section
-import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

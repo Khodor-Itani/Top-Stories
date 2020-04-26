@@ -18,7 +18,7 @@ class ArticleDataSourceImpl : ArticleDataSource, KoinComponent {
     val articleStore: ArticleStore by inject()
 
     /**
-     * Retrieve all articles for the specified section.
+     * Retrieve all articles for the specified section, then push results to store.
      */
     override fun getArticles(section: Section): Single<List<ArticleEntity>?> {
         return endpoint.getTopStories(section.value)
