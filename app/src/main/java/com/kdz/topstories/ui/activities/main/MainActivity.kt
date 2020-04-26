@@ -2,30 +2,18 @@ package com.kdz.topstories.ui.activities.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import com.kdz.topstories.R
 
-/**
- * Displays a [ViewPager] containing both [com.kdz.topstories.ui.fragments.topstories.TopStoriesFragment],
- * and [com.kdz.topstories.ui.fragments.bookmarks.BookmarksFragment].
- */
 class MainActivity : AppCompatActivity() {
+
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val sectionsPagerAdapter =
-            SectionsPagerAdapter(
-                this,
-                supportFragmentManager
-            )
-
-        val viewPager: ViewPager = findViewById(R.id.view_pager)
-        viewPager.adapter = sectionsPagerAdapter
-
-        val tabs: TabLayout = findViewById(R.id.tabs)
-        tabs.setupWithViewPager(viewPager)
+        navController = findNavController(R.id.navigationHostFragment)
     }
 }

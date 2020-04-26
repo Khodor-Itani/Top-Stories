@@ -8,15 +8,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdz.topstories.databinding.BookmarksFragmentBinding
 import com.kdz.topstories.databinding.BookmarksListCellBinding
-import com.kdz.topstories.extensions.goToArticleDetails
 import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.ui.ArticleSelectionHandler
 import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
+import com.kdz.topstories.ui.fragments.sectioncontainer.SectionContainerFragmentDirections
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -85,7 +86,11 @@ class BookmarksFragment : Fragment(), ArticleSelectionHandler {
     }
 
     override fun onArticleSelected(article: ArticleEntity) {
-        activity?.goToArticleDetails(article)
+        findNavController().navigate(
+            SectionContainerFragmentDirections.actionSectionContainerFragmentToArticleDetailsFragment(
+                article
+            )
+        )
     }
 }
 

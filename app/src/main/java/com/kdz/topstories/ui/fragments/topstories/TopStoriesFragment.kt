@@ -8,16 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.kdz.topstories.databinding.StoryListCellBinding
 import com.kdz.topstories.databinding.TopStoriesFragmentBinding
-import com.kdz.topstories.extensions.goToArticleDetails
 import com.kdz.topstories.models.ArticleEntity
 import com.kdz.topstories.ui.ArticleSelectionHandler
 import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
+import com.kdz.topstories.ui.fragments.sectioncontainer.SectionContainerFragmentDirections
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -64,7 +65,11 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
 
     private fun observeSnackbarMessages() {
         viewModel.snackbar.observe(viewLifecycleOwner, Observer {
-            val snackbar = Snackbar.make(activity?.findViewById(android.R.id.content)!!, context?.getString(it)!!, Snackbar.LENGTH_LONG)
+            val snackbar = Snackbar.make(
+                activity?.findViewById(android.R.id.content)!!,
+                context?.getString(it)!!,
+                Snackbar.LENGTH_LONG
+            )
 
             snackbar.setAction(android.R.string.ok) {
                 snackbar.dismiss()
@@ -91,13 +96,21 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
     }
 
     override fun onArticleSelected(article: ArticleEntity) {
-        activity?.goToArticleDetails(article)
+        findNavController().navigate(
+            SectionContainerFragmentDirections.actionSectionContainerFragmentToArticleDetailsFragment(
+                article
+            )
+        )
     }
 }
 
 class StoriesViewHolder(val binding: StoryListCellBinding) : RecyclerView.ViewHolder(binding.root)
 
-class StoriesAdapter(val viewLifecycleOwner: LifecycleOwner, val viewModel: TopStoriesViewModel, val selectionHandler: ArticleSelectionHandler) :
+class StoriesAdapter(
+    val viewLifecycleOwner: LifecycleOwner,
+    val viewModel: TopStoriesViewModel,
+    val selectionHandler: ArticleSelectionHandler
+) :
     RecyclerView.Adapter<StoriesViewHolder>() {
 
     var items = listOf<ArticleEntity>()

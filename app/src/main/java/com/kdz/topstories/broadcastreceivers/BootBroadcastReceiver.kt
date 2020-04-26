@@ -19,7 +19,7 @@ import org.koin.core.qualifier.named
 class BootBroadcastReceiver : BroadcastReceiver(), KoinComponent {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent == null || !intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) return
+        if (intent == null || !intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) return
 
         context?.let {
             launchPollingWorker(it)
