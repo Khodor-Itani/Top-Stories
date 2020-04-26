@@ -92,6 +92,7 @@ class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
         binding.mainRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = this@TopStoriesFragment.adapter
+            itemAnimator = null
         }
     }
 
