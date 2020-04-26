@@ -13,7 +13,7 @@ import org.koin.core.inject
 import org.koin.core.qualifier.named
 
 /**
- * Resumes article polling after the device has been rebooted.
+ * Resumes article polling after the device has booted.
  */
 
 class BootBroadcastReceiver : BroadcastReceiver(), KoinComponent {

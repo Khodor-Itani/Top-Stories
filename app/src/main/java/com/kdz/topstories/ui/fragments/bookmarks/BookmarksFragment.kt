@@ -20,6 +20,10 @@ import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/**
+ * Display a grid of bookmarked [ArticleEntity]s.
+ * User can click an article to see its details
+ */
 class BookmarksFragment : Fragment(), ArticleSelectionHandler {
 
     val viewModel: BookmarksViewModel by viewModel()

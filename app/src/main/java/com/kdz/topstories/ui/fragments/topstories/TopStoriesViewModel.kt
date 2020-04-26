@@ -15,8 +15,10 @@ import org.koin.core.inject
 // TODO: Use LiveData to update bookmark image color
 //  instead of relying on list updates from repo and DiffUtil.
 
+// TODO: Sort the articles by date?
+
 /**
- * Provides Article Data and bookmarking functionalities for the subscribed view.
+ * Provides a list of [ArticleEntity]s and bookmarking functionality for the subscribed view.
  */
 
 class TopStoriesViewModel : ViewModel(), KoinComponent {

@@ -6,6 +6,10 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.kdz.topstories.R
 
+/**
+ * Displays a [ViewPager] containing both [com.kdz.topstories.ui.fragments.topstories.TopStoriesFragment],
+ * and [com.kdz.topstories.ui.fragments.bookmarks.BookmarksFragment].
+ */
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -7,6 +7,9 @@ import com.kdz.topstories.R
 import com.kdz.topstories.databinding.ArticleDetailsActivityBinding
 import com.kdz.topstories.extensions.ARTICLE_PARAM
 
+/**
+ * Displays details for an [com.kdz.topstories.models.ArticleEntity] in a ScrollView.
+ */
 class ArticleDetailsActivity : AppCompatActivity() {
 
     lateinit var binding: ArticleDetailsActivityBinding

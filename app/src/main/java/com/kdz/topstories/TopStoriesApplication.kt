@@ -19,6 +19,9 @@ class TopStoriesApplication : Application() {
         launchPollingWorker()
     }
 
+    /**
+     * Creates an [ArticlePollWorker], which queries the API as defined in [workerModule].
+     */
     private fun launchPollingWorker() {
         val pollRequest: PeriodicWorkRequest by inject(named(POLL_WORK_REQUEST))
 
@@ -30,6 +33,9 @@ class TopStoriesApplication : Application() {
             )
     }
 
+    /**
+     * Initializes the Dependency Injection library.
+     */
     private fun initKoin() {
         startKoin {
             if (BuildConfig.DEBUG) androidLogger()

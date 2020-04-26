@@ -32,6 +32,10 @@ data class ArticleEntity(
     constructor() : this("", "", "", "", false, "", "", Section.US)
 
     companion object {
+
+        /**
+         * Copy an API Response [Article] into an [ArticleEntity].
+         */
         @JvmStatic
         fun copyFromArticle(article: Article, section: Section): ArticleEntity {
             return ArticleEntity(

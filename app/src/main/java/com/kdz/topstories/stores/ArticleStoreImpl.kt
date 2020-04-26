@@ -23,8 +23,8 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Retrieve a Maybe that signals whether the database contains a populated list of articles for
-     * the given Section.
+     * Retrieve a [Maybe] that signals whether the database contains a populated list of [ArticleEntity]s for
+     * the given [Section].
      */
     override fun getArticles(section: Section): Maybe<List<ArticleEntity>?> {
         return articleDatabase.articleDao()
@@ -44,7 +44,7 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Returns a Maybe that emits a list of bookmarked Articles, or finishes if the list is null or empty.
+     * Returns a [Maybe] that emits a list of bookmarked [ArticleEntity]s, or finishes if the list is null or empty.
      */
     override fun getBookmarkedArticles(): Maybe<List<ArticleEntity>?> {
         return articleDatabase.articleDao()
@@ -54,9 +54,9 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Persist an article to storage.
+     * Persist an [ArticleEntity] to storage.
      */
-    override fun addArticle(article: ArticleEntity) {
+    override fun updateArticle(article: ArticleEntity) {
         Maybe.create<Boolean> {
             articleDatabase.articleDao().update(article)
             it.onSuccess(true)
@@ -66,7 +66,7 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Replace non-bookmarked articles with new articles.
+     * Replace non-bookmarked [ArticleEntity]s with new [ArticleEntity]s.
      */
     override fun refreshArticleSection(articles: List<ArticleEntity>, section: Section) {
         deleteAllArticlesKeepBookmarked(section)
@@ -78,7 +78,7 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Deletes all articles, retaining bookmarked articles.
+     * Deletes all [ArticleEntity]s, retaining bookmarked [ArticleEntity]s.
      */
     private fun deleteAllArticlesKeepBookmarked(section: Section): Completable {
         return Completable.fromAction {
@@ -88,8 +88,8 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Observes the database for changes to the list of all articles. Updates are
-     * then pushed into the article cache. Subscribers are created relative to the Articles' sections.
+     * Observes the [ArticleDatabase] for changes to the list of all articles. Updates are
+     * then pushed into the article [ArticleCache]. Subscribers are created relative to the [ArticleEntity]'s [Section].
      */
     private fun observeAllArticles() {
         Section.values().forEach { section ->
@@ -104,8 +104,8 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Observes the database for changes to the list of bookmarked articles. Updates are
-     * then pushed into the article cache.
+     * Observes the [ArticleDatabase] for changes to the list of bookmarked [ArticleEntity]s. Updates are
+     * then pushed into the [ArticleCache].
      */
     private fun observeBookmarkedArticles() {
         articleDatabase.articleDao().observeBookmarked().subscribe { articles ->

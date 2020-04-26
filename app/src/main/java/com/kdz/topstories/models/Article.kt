@@ -25,6 +25,7 @@ data class Article(
     var isBookmarked: Boolean = false
 
 ) : Parcelable {
+
     fun getThumbnail(): String? {
         return multiMedia.find {
             it.format.equals("Standard Thumbnail", true)

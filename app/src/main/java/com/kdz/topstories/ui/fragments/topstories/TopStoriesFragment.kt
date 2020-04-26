@@ -21,6 +21,10 @@ import com.kdz.topstories.ui.diffcallbacks.ArticleDiffCallback
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/**
+ * Displays a list of [ArticleEntity]s in a List.
+ * User can bookmark an [ArticleEntity], or click on it to go to [com.kdz.topstories.ui.activities.articledetails.ArticleDetailsActivity].
+ */
 class TopStoriesFragment : Fragment(), ArticleSelectionHandler {
 
     val viewModel: TopStoriesViewModel by viewModel()

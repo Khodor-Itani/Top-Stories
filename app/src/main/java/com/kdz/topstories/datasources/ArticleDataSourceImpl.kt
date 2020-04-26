@@ -18,7 +18,7 @@ class ArticleDataSourceImpl : ArticleDataSource, KoinComponent {
     val articleStore: ArticleStore by inject()
 
     /**
-     * Retrieve all articles for the specified section, then push results to store.
+     * Retrieve all [Article]s for the specified section, then push results to [ArticleStore].
      */
     override fun getArticles(section: Section): Single<List<ArticleEntity>?> {
         return endpoint.getTopStories(section.value)
@@ -35,7 +35,7 @@ class ArticleDataSourceImpl : ArticleDataSource, KoinComponent {
     }
 
     /**
-     *  Map the articles response into a list of articles.
+     *  Map the [GetArticlesResponse] into a list of [Article]s.
      */
     private fun mapGetArticlesResponse(response: GetArticlesResponse): List<Article> {
 

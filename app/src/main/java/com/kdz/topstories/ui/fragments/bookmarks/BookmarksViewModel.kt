@@ -12,6 +12,9 @@ import io.reactivex.rxkotlin.addTo
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
+/**
+ * Provides a list of [ArticleEntity]s for the subscribed view.
+ */
 class BookmarksViewModel : ViewModel(), KoinComponent {
 
     private val articlesRepository: ArticlesRepository by inject()

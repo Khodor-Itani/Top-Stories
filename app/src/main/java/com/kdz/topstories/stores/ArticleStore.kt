@@ -11,7 +11,7 @@ interface ArticleStore {
 
     fun getBookmarkedArticles(): Maybe<List<ArticleEntity>?>
 
-    fun addArticle(article: ArticleEntity)
+    fun updateArticle(article: ArticleEntity)
 
     fun refreshArticleSection(articles: List<ArticleEntity>, section: Section)
 }
