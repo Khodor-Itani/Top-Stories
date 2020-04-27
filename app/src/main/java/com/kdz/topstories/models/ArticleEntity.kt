@@ -16,8 +16,8 @@ data class ArticleEntity(
     var title: String = "",
     @ColumnInfo(name= "published_date")
     var publishedDate: String = "",
-    @ColumnInfo(name= "abstract")
-    var abstract: String = "",
+    @ColumnInfo(name= "article_abstract")
+    var articleAbstract: String = "",
     @ColumnInfo(name= "url")
     var url: String = "",
     @ColumnInfo(name= "isBookmarked")

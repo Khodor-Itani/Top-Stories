@@ -34,11 +34,11 @@ class ArticleStoreImpl : ArticleStore, KoinComponent {
     }
 
     /**
-     * Persist Article list to storage
+     * Persist Article list to storage. Does not overwrite existing [ArticleEntity]s.
      */
     override fun setArticles(articles: List<ArticleEntity>) {
         Single.create<Void> {
-            articleDatabase.articleDao().upsert(articles)
+            articleDatabase.articleDao().insert(articles)
         }.subscribeOn(Schedulers.io())
             .subscribe()
     }

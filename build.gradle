@@ -10,6 +10,7 @@ buildscript {
         lifecycle_version = '2.2.0-alpha04'
         androidx_version = '1.1.0'
         recyclerview_version = '1.0.0'
+        koin_version = '2.0.1'
     }
 
     repositories {

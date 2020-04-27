@@ -7,6 +7,7 @@ import com.kdz.topstories.models.Section
 import com.kdz.topstories.stores.ArticleStore
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
@@ -43,7 +44,8 @@ class ArticlesRepositoryImpl(
                     .subscribe()
         }
 
-        return  articleCache.getObservableArticles(section)
+        return articleCache.getObservableArticles(section)
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     /**
